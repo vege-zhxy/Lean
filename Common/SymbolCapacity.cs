@@ -322,7 +322,7 @@ namespace QuantConnect
 
         public override string ToString()
         {
-            return $"{Security.Symbol} :: Capacity: {MarketCapacityDollarVolume} Sales: {SaleVolume} Trades: {Trades}";
+            return $"{Security.Symbol} :: Capacity: {MarketCapacityDollarVolume} Sales: {SaleVolume} Volume: {_previousVolume} Trades: {Trades} Fast Trade Discount: {_fastTradingVolumeDiscountFactor}";
         }
     }
 }
