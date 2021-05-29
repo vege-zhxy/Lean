@@ -319,5 +319,10 @@ namespace QuantConnect
 
             return true;
         }
+
+        public override string ToString()
+        {
+            return $"{Security.Symbol} :: Capacity: {MarketCapacityDollarVolume} Sales: {SaleVolume} Trades: {Trades}";
+        }
     }
 }

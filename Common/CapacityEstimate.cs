@@ -166,6 +166,8 @@ namespace QuantConnect
                     Capacity = new ReferenceWrapper<decimal>((0.33m * newCapacity) + (Capacity.Value * 0.66m));
                 }
 
+                Logging.Log.Trace($"{utcDate},{newCapacity},{Capacity},{percentageOfSaleVolume},{percentageOfHoldings},{smallestAsset}");
+
                 foreach (var capacity in _capacityBySymbol.Select(pair => pair.Value).ToList())
                 {
                     if (!capacity.ShouldRemove())
