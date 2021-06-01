@@ -248,6 +248,10 @@ namespace QuantConnect
             if (includeMarketVolume)
             {
                 _marketCapacityDollarVolume += bar.Close * _fastTradingVolumeDiscountFactor * bar.Volume * conversionRate * Security.SymbolProperties.ContractMultiplier;
+                if (bar.Symbol.Value == "BIL")
+                {
+                    Logging.Log.Trace($"{utcTime},BIL,{_averageDollarVolume},{_marketCapacityDollarVolume},{bar.Close},{_fastTradingVolumeDiscountFactor},{bar.Volume}");
+                }
             }
 
             // When we've finished including market volume, signal completed
