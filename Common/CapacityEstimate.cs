@@ -70,8 +70,15 @@ namespace QuantConnect
             _monitoredSymbolCapacity = new List<SymbolCapacity>();
             _monitoredSymbolCapacitySet = new HashSet<SymbolCapacity>();
             // Set the minimum snapshot period to one day, but use algorithm start/end if the algo runtime is less than seven days
-            _snapshotPeriod = TimeSpan.FromDays(Math.Max(Math.Min((_algorithm.EndDate - _algorithm.StartDate).TotalDays - 1, 7), 1)); 
-            _nextSnapshotDate = _algorithm.StartDate + _snapshotPeriod;
+            _snapshotPeriod = TimeSpan.FromDays(Math.Max(Math.Min((_algorithm.EndDate - _algorithm.StartDate).TotalDays - 1, 7), 1));
+            _nextSnapshotDate = _algorithm.EndDate;
+            do
+            {
+                _nextSnapshotDate -= _snapshotPeriod;
+            }
+            while (_nextSnapshotDate > _algorithm.StartDate);
+            _nextSnapshotDate += _snapshotPeriod;
+
             Capacity = new ReferenceWrapper<decimal>(0);
         }
 
