@@ -312,6 +312,7 @@ namespace QuantConnect.Securities
             if (Math.Abs(initialMarginRequiredForRemainderOfOrder) > freeMargin)
             {
                 return parameters.Insufficient(Invariant($"Id: {parameters.Order.Id}, ") +
+                    Invariant($"Id: {parameters.Order.Symbol}, ") +
                     Invariant($"Initial Margin: {initialMarginRequiredForRemainderOfOrder.Normalize()}, ") +
                     Invariant($"Free Margin: {freeMargin.Normalize()}")
                 );
@@ -418,6 +419,7 @@ namespace QuantConnect.Securities
                 return new GetMaximumOrderQuantityResult(0, reason, false);
             }
 
+            var order = new MarketOrder(parameters.Security.Symbol, orderQuantity, utcTime);
             var loopCount = 0;
             // Just in case...
             var lastOrderQuantity = 0m;
@@ -449,7 +451,7 @@ namespace QuantConnect.Securities
                 }
 
                 // generate the order
-                var order = new MarketOrder(parameters.Security.Symbol, orderQuantity, utcTime);
+                order = new MarketOrder(parameters.Security.Symbol, orderQuantity, utcTime);
 
                 var fees = parameters.Security.FeeModel.GetOrderFee(
                     new OrderFeeParameters(parameters.Security,
@@ -490,6 +492,17 @@ namespace QuantConnect.Securities
                 // we always have to loop at least twice
             }
             while (loopCount < 2 || orderMargin > absFinalOrderMargin);
+
+            var freeMargin = GetMarginRemaining(parameters.Portfolio, parameters.Security, direction);
+            var initialMarginRequiredForOrder = GetInitialMarginRequiredForOrder(
+                new InitialMarginRequiredForOrderParameters(
+                    parameters.Portfolio.CashBook, parameters.Security, order
+                ));
+
+            Logging.Log.Trace(Invariant($"Symbol: {parameters.Security.Symbol}, ") +
+                Invariant($"Order Margin: {orderMargin.Normalize()}, ") +
+                Invariant($"Initial Margin: {initialMarginRequiredForOrder.Value.Normalize()}, ") +
+                Invariant($"Free Margin: {freeMargin.Normalize()}"));
 
             // add directionality back in
             return new GetMaximumOrderQuantityResult((direction == OrderDirection.Sell ? -1 : 1) * orderQuantity);
