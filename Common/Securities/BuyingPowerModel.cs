@@ -420,6 +420,8 @@ namespace QuantConnect.Securities
             }
 
             var order = new MarketOrder(parameters.Security.Symbol, orderQuantity, utcTime);
+            var amountOfOrdersToRemove = parameters.Security.SymbolProperties.LotSize;
+
             var loopCount = 0;
             // Just in case...
             var lastOrderQuantity = 0m;
@@ -429,7 +431,7 @@ namespace QuantConnect.Securities
                 if (orderMargin > absFinalOrderMargin)
                 {
                     var currentOrderMarginPerUnit = orderMargin / orderQuantity;
-                    var amountOfOrdersToRemove = (orderMargin - absFinalOrderMargin) / currentOrderMarginPerUnit;
+                    amountOfOrdersToRemove = (orderMargin - absFinalOrderMargin) / currentOrderMarginPerUnit;
                     if (amountOfOrdersToRemove < parameters.Security.SymbolProperties.LotSize)
                     {
                         // we will always subtract at least 1 LotSize
@@ -500,7 +502,14 @@ namespace QuantConnect.Securities
                 ));
 
             Logging.Log.Trace(Invariant($"Symbol: {parameters.Security.Symbol}, ") +
+                Invariant($"parameters.TargetBuyingPower: {parameters.TargetBuyingPower.Normalize()}, ") +
+                Invariant($"totalPortfolioValue: {totalPortfolioValue.Normalize()}, ") +
+                Invariant($"RequiredFreeBuyingPowerPercent: {RequiredFreeBuyingPowerPercent.Normalize()}, ") +
+                Invariant($"currentSignedUsedMargin: {currentSignedUsedMargin.Normalize()}, ") +
+                Invariant($"amountOfOrdersToRemove: {amountOfOrdersToRemove.Normalize()}, ") +
                 Invariant($"Order Margin: {orderMargin.Normalize()}, ") +
+                Invariant($"Order Margin -1: {((orderQuantity - 1) * absUnitMargin).Normalize()}, ") +
+                Invariant($"Abs Final Order Margin: {absFinalOrderMargin.Normalize()}, ") +
                 Invariant($"Initial Margin: {initialMarginRequiredForOrder.Value.Normalize()}, ") +
                 Invariant($"Free Margin: {freeMargin.Normalize()}"));
 
