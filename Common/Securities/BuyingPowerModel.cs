@@ -501,20 +501,27 @@ namespace QuantConnect.Securities
                     parameters.Portfolio.CashBook, parameters.Security, order
                 ));
 
+            orderQuantity = (direction == OrderDirection.Sell ? -1 : 1) * orderQuantity;
+            var totalQuantity = parameters.Security.Holdings.Quantity + orderQuantity;
+            var totalOrderMargin = totalQuantity * absUnitMargin;
+
             Logging.Log.Trace(Invariant($"Symbol: {parameters.Security.Symbol}, ") +
                 Invariant($"parameters.TargetBuyingPower: {parameters.TargetBuyingPower.Normalize()}, ") +
                 Invariant($"totalPortfolioValue: {totalPortfolioValue.Normalize()}, ") +
-                Invariant($"RequiredFreeBuyingPowerPercent: {RequiredFreeBuyingPowerPercent.Normalize()}, ") +
+                //Invariant($"RequiredFreeBuyingPowerPercent: {RequiredFreeBuyingPowerPercent.Normalize()}, ") +
                 Invariant($"currentSignedUsedMargin: {currentSignedUsedMargin.Normalize()}, ") +
-                Invariant($"amountOfOrdersToRemove: {amountOfOrdersToRemove.Normalize()}, ") +
-                Invariant($"Order Margin: {orderMargin.Normalize()}, ") +
-                Invariant($"Order Margin -1: {((orderQuantity - 1) * absUnitMargin).Normalize()}, ") +
+                //Invariant($"amountOfOrdersToRemove: {amountOfOrdersToRemove.Normalize()}, ") +
+                Invariant($"orderFees: {orderFees.Normalize()}, ") +
                 Invariant($"Abs Final Order Margin: {absFinalOrderMargin.Normalize()}, ") +
+                Invariant($"Order Margin: {orderMargin.Normalize()}, ") +
+                Invariant($"orderQuantity: {orderQuantity.Normalize()}, ") +
+                Invariant($"totalOrderMargin: {totalOrderMargin.Normalize()}, ") +
+                Invariant($"totalQuantity: {totalQuantity.Normalize()}, ") +
                 Invariant($"Initial Margin: {initialMarginRequiredForOrder.Value.Normalize()}, ") +
                 Invariant($"Free Margin: {freeMargin.Normalize()}"));
 
             // add directionality back in
-            return new GetMaximumOrderQuantityResult((direction == OrderDirection.Sell ? -1 : 1) * orderQuantity);
+            return new GetMaximumOrderQuantityResult(orderQuantity);
         }
 
         /// <summary>
